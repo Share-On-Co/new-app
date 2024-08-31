@@ -1,33 +1,41 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState } from 'react';
 import { Image, StatusBar, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, Dimensions, ScrollView } from 'react-native';
 import { Button, Provider as PaperProvider, DefaultTheme, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as WebBrowser from 'expo-web-browser';
-import * as Linking from 'expo-linking';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
-
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleGoogleLoginPress = async () => {
-
+    return;
   };
+
+  useEffect(() => {
+    const checkLoggedIn = async () => { 
+    const loggedIn = await AsyncStorage.getItem('loggedIn');
+    if (loggedIn === 'true') {
+      navigation.navigate('chat');
+    }
+  }
+  checkLoggedIn();
+  }, []);
 
   const handleLoginPress = async () => {
-
-  };
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size='large' color='#BF1B1B' />
-      </View>
-    )
+    // make a GET request to https://mongodb-vercel-app.vercel.app/api/auth/login
+    const response = await fetch(`https://mongodb-rag-vercel-inquiry-share-onorg-share-ons-projects.vercel.app/api/auth/login/?username=${email}&password=${password}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    const user = await response.json();
+    const id = user.id;
+    navigation.navigate('home', { id: id });
   }
 
   return (
@@ -37,10 +45,10 @@ export default function LoginScreen({ navigation }) {
           <View style={styles.innerContainer}>
             <Image
               style={styles.logo}
-              source={require('../../assets/images/icon.png')}
+              source={require('../../assets/images/shareon.jpeg')}
             />
             <Text style={styles.title}>Share-On</Text>
-            <Text style={styles.subtitle}>Empowering teens</Text>
+            <Text style={styles.subtitle}>empowering teen mental health with AI</Text>
             <View style={styles.inputContainer}>
               <TextInput
                 mode='outlined'
@@ -70,7 +78,7 @@ export default function LoginScreen({ navigation }) {
               <TouchableOpacity onPress={handleLoginPress} style={styles.loginButton}>
                 <Text style={styles.loginButtonText}>Login</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate("auth/register")}>
+              <TouchableOpacity onPress={() => navigation.navigate("auth/register")}> 
                 <Text style={styles.registerText}>Don't have an account?</Text>
               </TouchableOpacity>
               <View style={styles.dividerContainer}>
@@ -79,7 +87,7 @@ export default function LoginScreen({ navigation }) {
                 <View style={styles.divider} />
               </View>
               <TouchableOpacity onPress={handleGoogleLoginPress} style={styles.googleButton}>
-                <Image source={require('../../assets/images/icon.png')} />
+                <Image source={require('../../assets/images/google.png')} />
                 <Text style={styles.googleButtonText}>Sign in with Google</Text>
               </TouchableOpacity>
             </View>
@@ -106,9 +114,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    marginBottom: height * 0.05,
-    width: width * 0.5,
-    height: height * 0.1,
+    marginBottom: height * 0.02,
+    width: width,
+    height: height * 0.15,
     resizeMode: 'contain',
   },
   title: {
