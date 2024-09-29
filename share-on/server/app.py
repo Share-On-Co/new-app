@@ -38,6 +38,7 @@ def check_if_token_in_blocklist(jwt_header, jwt_payload):
 def index():
     return jsonify({"message": "Welcome to the API"})
 
+
 @app.route("/users", methods=["GET"])
 @jwt_required()
 def get_users():
